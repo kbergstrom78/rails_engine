@@ -70,5 +70,62 @@ RSpec.describe 'Items API' do
       expect(new_item.unit_price).to eq(item_params[:unit_price])
       expect(new_item.merchant_id).to eq(item_params[:merchant_id])
     end
+
+    it 'updates an existing item' do
+      @merchant = create(:merchant)
+      @merchant2 = create(:merchant)
+      item = create(:item, merchant_id: @merchant.id)
+
+      edit_item_params = {
+        name: 'duct tape',
+        description: 'everything fixer',
+        unit_price: 5.99,
+        merchant_id: @merchant2.id
+      }
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      patch api_v1_item_path(item.id), headers: headers, params: JSON.generate({item: edit_item_params})
+      edited_item = Item.find_by(id: item.id)
+
+      expect(response).to be_successful
+      expect(edited_item.name).to eq(edit_item_params[:name])
+      expect(edited_item.name).to_not eq(item.name)
+      expect(edited_item.description).to eq(edit_item_params[:description])
+      expect(edited_item.description).to_not eq(item.description)
+      expect(edited_item.unit_price).to eq(edit_item_params[:unit_price])
+      expect(edited_item.unit_price).to_not eq(item.unit_price)
+      expect(edited_item.merchant_id).to eq(@merchant2.id)
+      expect(edited_item.merchant_id).to_not eq(@merchant.id)
+    end
+
+    it 'updates an item with only partial data' do
+      @merchant = create(:merchant)
+      item = create(:item, merchant_id: @merchant.id)
+
+      partial_item_params = {
+        name: 'new name'
+      }
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      patch api_v1_item_path(item.id), headers: headers, params: JSON.generate({item: partial_item_params})
+      edited_item = Item.find_by(id: item.id)
+
+      expect(response).to be_successful
+      expect(edited_item.name).to eq(partial_item_params[:name])
+      expect(edited_item.name).to_not eq(item.name)
+    end
+  end
+
+  describe 'edge cases' do
+    it 'returns 400 or 404 for a bad merchant ID' do
+      bad_merchant_id = -1
+
+      expect {
+        get api_v1_item_path(id: bad_merchant_id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+
+    end
   end
 end
