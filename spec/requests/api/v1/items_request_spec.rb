@@ -116,6 +116,20 @@ RSpec.describe 'Items API' do
       expect(edited_item.name).to eq(partial_item_params[:name])
       expect(edited_item.name).to_not eq(item.name)
     end
+
+    it 'removes an item' do
+      @merchant = create(:merchant)
+      item = create(:item, merchant_id: @merchant.id)
+
+      expect(Item.count).to eq(1)
+
+      delete api_v1_item_path(item.id)
+
+      expect(response).to be_successful
+      expect(response.status).to eq(204)
+      expect(Item.count).to eq(0)
+      expect { Item.find(item.id) }.to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 
   describe 'edge cases' do
