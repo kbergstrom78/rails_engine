@@ -9,13 +9,11 @@ class Item < ApplicationRecord
                         :merchant_id
 
   def self.update_with_merchant_check(id, merchant_id, item_params)
-    item = find_by(id: id)
+    item = find_by(id:)
     return [nil, 'Item not found'] unless item
 
     merchant = Merchant.find_by(id: merchant_id) if merchant_id
-    if merchant_id && !merchant
-      return [nil, 'Merchant not found']
-    end
+    return [nil, 'Merchant not found'] if merchant_id && !merchant
 
     item.update!(item_params)
     [item, nil]

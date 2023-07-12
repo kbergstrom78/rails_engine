@@ -21,7 +21,7 @@ RSpec.describe Item, type: :model do
       @item = create(:item, merchant_id: @merchant.id)
     end
 
-    context "when item and merchant exist" do
+    context 'when item and merchant exist' do
       it 'updates and returns the item' do
         params = {
           name: 'duct tape',
