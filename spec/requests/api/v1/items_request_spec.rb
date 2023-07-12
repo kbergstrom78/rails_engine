@@ -85,7 +85,7 @@ RSpec.describe 'Items API' do
 
       headers = { 'CONTENT_TYPE' => 'application/json' }
 
-      patch api_v1_item_path(item.id), headers: headers, params: JSON.generate({item: edit_item_params})
+      patch api_v1_item_path(item.id), headers:, params: JSON.generate({ item: edit_item_params })
       edited_item = Item.find_by(id: item.id)
 
       expect(response).to be_successful
@@ -109,12 +109,26 @@ RSpec.describe 'Items API' do
 
       headers = { 'CONTENT_TYPE' => 'application/json' }
 
-      patch api_v1_item_path(item.id), headers: headers, params: JSON.generate({item: partial_item_params})
+      patch api_v1_item_path(item.id), headers:, params: JSON.generate({ item: partial_item_params })
       edited_item = Item.find_by(id: item.id)
 
       expect(response).to be_successful
       expect(edited_item.name).to eq(partial_item_params[:name])
       expect(edited_item.name).to_not eq(item.name)
+    end
+
+    it 'removes an item' do
+      @merchant = create(:merchant)
+      item = create(:item, merchant_id: @merchant.id)
+
+      expect(Item.count).to eq(1)
+
+      delete api_v1_item_path(item.id)
+
+      expect(response).to be_successful
+      expect(response.status).to eq(204)
+      expect(Item.count).to eq(0)
+      expect { Item.find(item.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 
@@ -122,10 +136,9 @@ RSpec.describe 'Items API' do
     it 'returns 400 or 404 for a bad merchant ID' do
       bad_merchant_id = -1
 
-      expect {
+      expect do
         get api_v1_item_path(id: bad_merchant_id)
-      }.to raise_error(ActiveRecord::RecordNotFound)
-
+      end.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
