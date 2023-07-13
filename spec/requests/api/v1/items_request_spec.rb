@@ -163,7 +163,6 @@ RSpec.describe 'Items API', type: :request do
 
       expect(response.status).to eq(404)
       expect(response.body).to eq("{\"error\":\"Couldn't find merchant with 'id'=-1\"}")
-
     end
   end
 end
