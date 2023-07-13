@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'Item Merchant API' do
+RSpec.describe 'Item Merchant API', type: :request do
   describe 'happy path' do
     it 'can get the merchant for an item' do
       @merchant = create(:merchant)
@@ -20,4 +20,15 @@ RSpec.describe 'Item Merchant API' do
       expect(merchant_data[:data][:attributes][:name]).to_not eq(@merchant3.name)
     end
   end
+
+  describe 'sad path' do
+    it 'returns 404 for bad item id when trying to access its merchant' do
+      get "/api/v1/items/-1/merchant"
+
+      expect(response.status).to eq(404)
+      expect(response.body).to eq("{\"error\":\"Item not Found\"}")
+    end
+
+  end
+
 end
