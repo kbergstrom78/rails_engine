@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'factory_bot_rails'
 
-RSpec.describe 'Merchants API' do
+RSpec.describe 'Merchants API', type: :request do
   describe 'happy path' do
     it 'sends a list of merchants' do
       FactoryBot.create_list(:merchant, 9)
@@ -33,6 +33,15 @@ RSpec.describe 'Merchants API' do
       expect(merchant_info[:data][:attributes]).to have_key(:name)
       expect(merchant_info[:data][:attributes][:name]).to be_a(String)
       expect(merchant_info[:data][:id]).to eq(id.to_s)
+    end
+  end
+
+  describe 'sad path' do
+    it 'returns 404 for bad integer ID' do
+      get "/api/v1/merchants/-1"
+
+      expect(response.status).to eq(404)
+      expect(response.body).to match("{\"error\":\"Couldn't find merchant with 'id'=-1\"}")
     end
   end
 end
