@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'factory_bot_rails'
 
-RSpec.describe 'Items API' do
+RSpec.describe 'Items API', type: :request do
   describe 'happy path' do
     it 'sends a list of items' do
       id_1 = create(:merchant).id
@@ -146,13 +146,24 @@ RSpec.describe 'Items API' do
     expect { Invoice.find(invoice.id) }.to raise_error(ActiveRecord::RecordNotFound)
   end
 
+  describe 'sad path cases' do
+    it 'returns 404 for non-existing item ID' do
+      get "/api/v1/items/-1"
+
+      expect(response.status).to eq(404)
+      expect(response.body).to eq("{\"error\":\"Item not Found\"}")
+    end
+  end
+
   describe 'edge cases' do
     it 'returns 400 or 404 for a bad merchant ID' do
       bad_merchant_id = -1
 
-      expect do
-        get api_v1_item_path(id: bad_merchant_id)
-      end.to raise_error(ActiveRecord::RecordNotFound)
+      get api_v1_merchant_items_path(bad_merchant_id)
+
+      expect(response.status).to eq(404)
+      expect(response.body).to eq("{\"error\":\"Couldn't find merchant with 'id'=-1\"}")
+
     end
   end
 end
