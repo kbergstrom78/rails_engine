@@ -42,8 +42,6 @@ module Api
       def record_not_found
         render json: { error: "Item not Found"}, status: :not_found
       end
-
-
     end
   end
 end

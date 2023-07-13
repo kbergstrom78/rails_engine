@@ -23,9 +23,7 @@ class Item < ApplicationRecord
   end
 
   def invoice_destroy
-    self.invoice_items.each do |invoice_item|
-    invoice = Invoice.find(invoice_item.invoice_id)
-    invoice.destroy if invoice.invoice_items.count == 1
-    end
+    invoices_to_destroy = self.invoices.select { |invoice| invoice.invoice_items.count == 1 }
+    invoices_to_destroy.each(&:destroy)
   end
 end
