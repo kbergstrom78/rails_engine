@@ -26,4 +26,19 @@ class Item < ApplicationRecord
     invoices_to_destroy = self.invoices.select { |invoice| invoice.invoice_items.count == 1 }
     invoices_to_destroy.each(&:destroy)
   end
+
+
+  def self.find_all(name:, min_price:, max_price:)
+    if name.present? && min_price.nil? && max_price.nil?
+      Item.find_by_name_fragment(name)
+    elsif (min_price.to_f > 0 || max_price.to_f > 0) && name.nil?
+      Item.find_by_price(min_price: min_price, max_price: max_price)
+    else
+      []
+    end
+  end
+
+  def self.find_by_name_fragment(fragment)
+    Item.where('name ILIKE ?', "%#{fragment}%").order(:name)
+  end
 end
