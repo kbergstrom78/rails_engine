@@ -28,7 +28,14 @@ RSpec.describe 'Item Merchant API', type: :request do
       expect(response.status).to eq(404)
       expect(response.body).to eq("{\"error\":\"Item not Found\"}")
     end
-
   end
 
+  describe 'edge case' do
+    it 'returns 404 for string ID instead of integer ID when trying to access its merchant' do
+      get "/api/v1/items/one/merchant"
+
+      expect(response.status).to eq(404)
+      expect(response.body).to eq("{\"error\":\"Item not Found\"}")
+    end
+  end
 end
