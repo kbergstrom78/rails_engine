@@ -32,7 +32,9 @@ module Api
 
       def destroy
         item = Item.find(params[:id])
+        item.invoice_destroy
         item.destroy
+        head :no_content
       end
 
       private

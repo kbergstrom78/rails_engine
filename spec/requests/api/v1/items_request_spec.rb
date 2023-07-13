@@ -132,6 +132,20 @@ RSpec.describe 'Items API' do
     end
   end
 
+  it 'removes an invoice if there are no items on it' do
+    @merchant = create(:merchant)
+    item = create(:item, merchant_id: @merchant.id)
+    customer = create(:customer)
+    invoice = create(:invoice, customer_id: customer.id, merchant_id: @merchant.id)
+    invoice_item = create(:invoice_item, item_id: item.id, invoice_id: invoice.id)
+
+    delete api_v1_item_path(item.id)
+
+    expect(response).to be_successful
+    expect(response.status).to eq(204)
+    expect { Invoice.find(invoice.id) }.to raise_error(ActiveRecord::RecordNotFound)
+  end
+
   describe 'edge cases' do
     it 'returns 400 or 404 for a bad merchant ID' do
       bad_merchant_id = -1
