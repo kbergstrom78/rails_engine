@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Search Merchant API', type: :request do
-  describe 'GET /api/v1/merchants/find' do
+  describe 'happy path' do
     before :each do
       @merchant1 = create(:merchant, name: 'Patty O Furniture')
       @merchant2 = create(:merchant, name: 'Patio Furniture')
@@ -32,6 +32,21 @@ RSpec.describe 'Search Merchant API', type: :request do
       expect(merchants[:attributes]).to have_key(:name)
       expect(merchants[:attributes][:name]).to eq(@merchant2.name)
       expect(merchants[:attributes][:name]).to_not eq(@merchant3.name)
+    end
+  end
+
+  describe 'sad path' do
+    it 'returns an empty array if no matches are found' do
+      query_params = { name: 'uhoh' }
+
+      get '/api/v1/merchants/find', params: query_params
+
+      expect(response).to be_successful
+      expect(response.status).to eq(200)
+
+      merchant_data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(merchant_data[:data][:merchants]).to eq([])
     end
   end
 end
