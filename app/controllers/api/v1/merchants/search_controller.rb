@@ -6,7 +6,7 @@ module Api
           if params[:name].present?
             merchants = Merchant.search_by_name(params[:name])
             if merchants.empty?
-              render json: { data: [] }, status: 200
+              render json: { data: { merchants: [] } }, status: 200
             else
               render json: MerchantSerializer.new(merchants.first).serializable_hash.to_json
             end
