@@ -12,7 +12,7 @@ class Item < ApplicationRecord
                         :merchant_id
 
   def self.update_with_merchant_check(id, merchant_id, item_params)
-    item = find_by(id:)
+    item = find_by(id: id)
     return [nil, 'Item not found'] unless item
 
     merchant = Merchant.find_by(id: merchant_id) if merchant_id
@@ -40,5 +40,17 @@ class Item < ApplicationRecord
 
   def self.find_by_name_fragment(fragment)
     Item.where('name ILIKE ?', "%#{fragment}%").order(:name)
+  end
+
+  def self.find_by_price(min_price:, max_price:)
+    if min_price.present? && max_price.present?
+      Item.where('unit_price >= ?', min_price).where('unit_price <= ?', max_price).order(:name)
+    elsif min_price.present?
+      Item.where('unit_price >= ?', min_price).order(:name)
+    elsif max_price.present?
+      Item.where('unit_price <= ?', max_price).order(:name)
+    else
+      Item.all.order(:name)
+    end
   end
 end
