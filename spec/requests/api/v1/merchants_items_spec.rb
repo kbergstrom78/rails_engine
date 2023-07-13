@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Merchants API' do
+RSpec.describe 'Merchants API', type: :request do
   describe 'happy path' do
     it 'can get all items from a merchant' do
       id = create(:merchant).id
@@ -25,6 +25,15 @@ RSpec.describe 'Merchants API' do
         expect(item[:attributes]).to have_key(:merchant_id)
         expect(item[:attributes][:merchant_id]).to be_a(Integer)
       end
+    end
+  end
+
+  describe 'sad path' do
+    it 'it returns 404 for bad merchant ID when fetching items' do
+      get "/api/v1/merchants/-1/items"
+
+      expect(response.status).to eq(404)
+      expect(response.body).to match("Couldn't find merchant with 'id'=-1")
     end
   end
 end
