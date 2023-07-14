@@ -8,12 +8,10 @@ module Api
       end
 
       def show
-        begin
-          merchant = Merchant.find(params[:id])
-          render json: MerchantSerializer.new(Merchant.find(params[:id]))
-        rescue ActiveRecord::RecordNotFound
-          render json: { error: "Couldn't find merchant with 'id'=#{params[:id]}" }, status: :not_found
-        end
+        Merchant.find(params[:id])
+        render json: MerchantSerializer.new(Merchant.find(params[:id]))
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Couldn't find merchant with 'id'=#{params[:id]}" }, status: :not_found
       end
     end
   end

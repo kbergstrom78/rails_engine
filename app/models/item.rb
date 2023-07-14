@@ -12,7 +12,7 @@ class Item < ApplicationRecord
                         :merchant_id
 
   def self.update_with_merchant_check(id, merchant_id, item_params)
-    item = find_by(id: id)
+    item = find_by(id:)
     return [nil, 'Item not found'] unless item
 
     merchant = Merchant.find_by(id: merchant_id) if merchant_id
@@ -23,18 +23,17 @@ class Item < ApplicationRecord
   end
 
   def invoice_destroy
-    invoices_to_destroy = self.invoices.select { |invoice| invoice.invoice_items.count == 1 }
+    invoices_to_destroy = invoices.select { |invoice| invoice.invoice_items.count == 1 }
     invoices_to_destroy.each(&:destroy)
   end
 
-
-  def self.find_all(name:, min_price:, max_price:)
-    if name.present? && min_price.nil? && max_price.nil?
-      Item.find_by_name_fragment(name)
-    elsif (min_price.to_f > 0 || max_price.to_f > 0) && name.nil?
-      Item.find_by_price(min_price: min_price, max_price: max_price)
+  def self.find_all(params)
+    if params[:name] && params[:min_price].nil? && params[:max_price].nil?
+      Item.find_all_by_name(params)
+    elsif params[:name].nil? && (params[:min_price].to_f.positive? || params[:max_price].to_f.positive?)
+      Item.find_by_price(params)
     else
-      []
+      false
     end
   end
 

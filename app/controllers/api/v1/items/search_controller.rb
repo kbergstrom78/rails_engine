@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     module Items
@@ -11,10 +13,10 @@ module Api
             render json: { errors: 'Bad Request' }, status: 404
           elsif fragment.present? && (min_price.present? || max_price.present?)
             render json: { errors: 'Cannot send name and price parameters together' }, status: 400
-          elsif min_price.to_f < 0 || max_price.to_f < 0
+          elsif min_price.to_f.negative? || max_price.to_f.negative?
             render json: { errors: 'Price must be greater than or equal to 0' }, status: 400
           else
-            result = Item.find_all(name: fragment, min_price: min_price, max_price: max_price)
+            result = Item.find_all(name: fragment, min_price:, max_price:)
             if result.empty?
               render json: { data: [] }, status: 200
             elsif result
@@ -28,6 +30,3 @@ module Api
     end
   end
 end
-
-
-

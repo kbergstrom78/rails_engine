@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     module Merchants
@@ -18,5 +20,3 @@ module Api
     end
   end
 end
-
-

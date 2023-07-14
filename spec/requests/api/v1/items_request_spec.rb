@@ -137,7 +137,7 @@ RSpec.describe 'Items API', type: :request do
     item = create(:item, merchant_id: @merchant.id)
     customer = create(:customer)
     invoice = create(:invoice, customer_id: customer.id, merchant_id: @merchant.id)
-    invoice_item = create(:invoice_item, item_id: item.id, invoice_id: invoice.id)
+    create(:invoice_item, item_id: item.id, invoice_id: invoice.id)
 
     delete api_v1_item_path(item.id)
 
@@ -148,10 +148,10 @@ RSpec.describe 'Items API', type: :request do
 
   describe 'sad path cases' do
     it 'returns 404 for non-existing item ID' do
-      get "/api/v1/items/-1"
+      get '/api/v1/items/-1'
 
       expect(response.status).to eq(404)
-      expect(response.body).to eq("{\"error\":\"Item not Found\"}")
+      expect(response.body).to eq('{"error":"Item not Found"}')
     end
   end
 
@@ -164,12 +164,12 @@ RSpec.describe 'Items API', type: :request do
       expect(response.status).to eq(404)
       expect(response.body).to eq("{\"error\":\"Couldn't find merchant with 'id'=-1\"}")
     end
-    
+
     it 'returns 404 for string ID instead of integer' do
-      get "/api/v1/items/one"
+      get '/api/v1/items/one'
 
       expect(response.status).to eq(404)
-      expect(response.body).to eq("{\"error\":\"Item not Found\"}")
+      expect(response.body).to eq('{"error":"Item not Found"}')
     end
   end
 end

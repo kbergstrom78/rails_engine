@@ -38,7 +38,7 @@ RSpec.describe 'Merchants API', type: :request do
 
   describe 'sad path' do
     it 'returns 404 for bad integer ID' do
-      get "/api/v1/merchants/-1"
+      get '/api/v1/merchants/-1'
 
       expect(response.status).to eq(404)
       expect(response.body).to match("{\"error\":\"Couldn't find merchant with 'id'=-1\"}")

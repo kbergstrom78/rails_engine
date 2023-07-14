@@ -3,7 +3,7 @@
 module Api
   module V1
     class ItemsController < ApplicationController
-    rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+      rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
       def index
         render json: ItemSerializer.new(Item.all)
       end
@@ -40,7 +40,7 @@ module Api
       end
 
       def record_not_found
-        render json: { error: "Item not Found"}, status: :not_found
+        render json: { error: 'Item not Found' }, status: :not_found
       end
     end
   end

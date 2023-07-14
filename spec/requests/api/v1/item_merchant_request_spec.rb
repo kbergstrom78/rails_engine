@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Item Merchant API', type: :request do
@@ -23,19 +25,19 @@ RSpec.describe 'Item Merchant API', type: :request do
 
   describe 'sad path' do
     it 'returns 404 for bad item id when trying to access its merchant' do
-      get "/api/v1/items/-1/merchant"
+      get '/api/v1/items/-1/merchant'
 
       expect(response.status).to eq(404)
-      expect(response.body).to eq("{\"error\":\"Item not Found\"}")
+      expect(response.body).to eq('{"error":"Item not Found"}')
     end
   end
 
   describe 'edge case' do
     it 'returns 404 for string ID instead of integer ID when trying to access its merchant' do
-      get "/api/v1/items/one/merchant"
+      get '/api/v1/items/one/merchant'
 
       expect(response.status).to eq(404)
-      expect(response.body).to eq("{\"error\":\"Item not Found\"}")
+      expect(response.body).to eq('{"error":"Item not Found"}')
     end
   end
 end
