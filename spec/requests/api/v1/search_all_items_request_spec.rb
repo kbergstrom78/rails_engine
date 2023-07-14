@@ -45,10 +45,33 @@ RSpec.describe 'Search All Items API', type: :request do
       @item6 = create(:item, merchant_id: @merchant3.id, unit_price: 50.00, name: 'you fish')
       @item7 = create(:item, merchant_id: @merchant3.id, unit_price: 1000.00, name: 'phish fish')
     end
-      it 'returns a 404 status code if bad data' do
-        get api_v1_items_find_all_path(name: '')
+    
+    it 'returns a 404 status code if bad data' do
+      get api_v1_items_find_all_path(name: '')
 
-        expect(response.status).to eq(404)
-      end
+      expect(response.status).to eq(404)
+    end
+
+    it 'returns a 404 status code if name parameter is an empty string' do
+      get api_v1_items_find_all_path(name: '')
+      expect(response.status).to eq(404)
+    end
+
+    it 'returns a 400 status code if name and price parameters are sent together' do
+      get api_v1_items_find_all_path(name: 'fish', min_price: 5)
+      expect(response.status).to eq(400)
+    end
+
+    it 'returns a 400 status code if min_price or max_price is less than 0' do
+      get api_v1_items_find_all_path(min_price: -5)
+      expect(response.status).to eq(400)
+    end
+
+    it 'returns a 200 status and empty data array when no results found' do
+      get api_v1_items_find_all_path(name: 'Nonexistent')
+      expect(response.status).to eq(200)
+      parsed_body = JSON.parse(response.body)
+      expect(parsed_body["data"]).to be_empty
+    end
   end
 end
