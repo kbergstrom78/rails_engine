@@ -45,7 +45,7 @@ RSpec.describe 'Search All Items API', type: :request do
       @item6 = create(:item, merchant_id: @merchant3.id, unit_price: 50.00, name: 'you fish')
       @item7 = create(:item, merchant_id: @merchant3.id, unit_price: 1000.00, name: 'phish fish')
     end
-    
+
     it 'returns a 404 status code if bad data' do
       get api_v1_items_find_all_path(name: '')
 
