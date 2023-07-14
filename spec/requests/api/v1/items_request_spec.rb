@@ -160,6 +160,23 @@ RSpec.describe 'Items API', type: :request do
       expect(response.status).to eq(404)
       expect(response.body).to eq("{\"error\":\"Item not Found\"}")
     end
+
+    context 'when the item does not exist or merchant does not exist' do
+      let(:item_id) { 'non_existing_item_id' }
+      let(:valid_attributes) do
+        { item: { name: 'new name' } }
+      end
+
+      before { patch "/api/v1/items/#{item_id}", params: valid_attributes, headers: headers }
+
+      it 'returns status code 404' do
+        expect(response).to have_http_status(404)
+      end
+
+      it 'returns an error message' do
+        expect(response.body).to match(/Item not found/)
+      end
+    end
   end
 
   describe 'edge cases' do

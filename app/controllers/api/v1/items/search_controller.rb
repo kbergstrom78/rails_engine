@@ -17,10 +17,8 @@ module Api
             result = Item.find_all(name: fragment, min_price: min_price, max_price: max_price)
             if result.empty?
               render json: { data: [] }, status: 200
-            elsif result
+            else result
               render json: ItemSerializer.new(result)
-            else
-              render json: { errors: 'Bad Request' }, status: 400
             end
           end
         end
