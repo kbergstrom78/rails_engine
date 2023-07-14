@@ -23,8 +23,9 @@ RSpec.describe Item, type: :model do
       @merchant2 = create(:merchant)
       @customer = create(:customer)
 
-      @item1 = create(:item, merchant: @merchant)
-      @item2 = create(:item, merchant: @merchant)
+      @item1 = create(:item, merchant: @merchant, unit_price: 9.99)
+      @item2 = create(:item, merchant: @merchant, unit_price: 15.99)
+      @item3 = create(:item, merchant: @merchant, unit_price: 199.99)
 
       @invoice1 = create(:invoice, merchant: @merchant, customer: @customer)
       @invoice2 = create(:invoice, merchant: @merchant, customer: @customer)
@@ -39,6 +40,36 @@ RSpec.describe Item, type: :model do
         expect { @item1.invoice_destroy }.to change { Invoice.count }.by(-1)
         expect(Invoice.find_by(id: @invoice1.id)).to be_nil
         expect(Invoice.find_by(id: @invoice2.id)).to_not be_nil
+      end
+    end
+
+    describe '.find_by_price' do
+      context 'when both min_price and max_price are present' do
+        it 'returns items within the price range' do
+          result = Item.find_by_price(min_price: 10, max_price: 200)
+          expect(result).to match_array([@item2, @item3])
+        end
+      end
+
+      context 'when only min_price is present' do
+        it 'returns items with price greater than or equal to min_price' do
+          result = Item.find_by_price(min_price: 15)
+          expect(result).to match_array([@item2, @item3])
+        end
+      end
+
+      context 'when only max_price is present' do
+        it 'returns items with price less than or equal to max_price' do
+          result = Item.find_by_price(max_price: 15)
+          expect(result).to match_array([@item1])
+        end
+      end
+
+      context 'when neither min_price nor max_price is present' do
+        it 'returns all items' do
+          result = Item.find_by_price
+          expect(result).to match_array([@item1, @item2, @item3])
+        end
       end
     end
 
