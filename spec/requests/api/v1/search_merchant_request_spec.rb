@@ -48,5 +48,15 @@ RSpec.describe 'Search Merchant API', type: :request do
 
       expect(merchant_data[:data][:merchants]).to eq([])
     end
+
+    it 'returns a 200 status and empty array if no query params are given' do
+      get api_v1_merchants_find_path
+
+      expect(response.status).to eq(200)
+
+      merchant_data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(merchant_data[:data][:merchants]).to be_empty
+    end
   end
 end

@@ -42,7 +42,7 @@ class Item < ApplicationRecord
     Item.where('name ILIKE ?', "%#{fragment}%").order(:name)
   end
 
-  def self.find_by_price(min_price:, max_price:)
+  def self.find_by_price(min_price: nil, max_price: nil)
     if min_price.present? && max_price.present?
       Item.where('unit_price >= ?', min_price).where('unit_price <= ?', max_price).order(:name)
     elsif min_price.present?
