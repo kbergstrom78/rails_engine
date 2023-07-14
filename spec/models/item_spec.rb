@@ -23,9 +23,9 @@ RSpec.describe Item, type: :model do
       @merchant2 = create(:merchant)
       @customer = create(:customer)
 
-      @item1 = create(:item, merchant: @merchant, unit_price: 9.99)
-      @item2 = create(:item, merchant: @merchant, unit_price: 15.99)
-      @item3 = create(:item, merchant: @merchant, unit_price: 199.99)
+      @item1 = create(:item, merchant: @merchant, unit_price: 9.99, name: 'Wool Sweater')
+      @item2 = create(:item, merchant: @merchant, unit_price: 15.99, name: 'Cotton Sweater')
+      @item3 = create(:item, merchant: @merchant, unit_price: 199.99, name: 'Silk Sweater')
 
       @invoice1 = create(:invoice, merchant: @merchant, customer: @customer)
       @invoice2 = create(:invoice, merchant: @merchant, customer: @customer)
@@ -42,6 +42,43 @@ RSpec.describe Item, type: :model do
         expect(Invoice.find_by(id: @invoice2.id)).to_not be_nil
       end
     end
+
+    describe '.find_all' do
+      context 'when only name is present' do
+        it 'returns items with name fragment' do
+          result = Item.find_all(name: 'sweater', min_price: nil, max_price: nil)
+          expect(result).to match_array([@item1, @item2, @item3])
+        end
+      end
+
+      context 'when only min_price or max_price is present' do
+        it 'returns items within price range' do
+          result = Item.find_all(name: nil, min_price: 50, max_price: 500)
+          expect(result).to match_array([@item3])
+        end
+
+        it 'returns items within price range' do
+          result = Item.find_all(name: nil, min_price: nil, max_price: 20)
+          expect(result).to match_array([@item1, @item2])
+        end
+      end
+
+      context 'when min_price and max_price are present' do
+        it 'returns items within price range' do
+          result = Item.find_all(name: nil, min_price: 5, max_price: 20)
+          expect(result).to match_array([@item1, @item2])
+        end
+      end
+
+      context 'when name, min_price and max_price are nil' do
+        it 'returns an empty array' do
+          result = Item.find_all(name: nil, min_price: nil, max_price: nil)
+          expect(result).to be_empty
+        end
+      end
+    end
+
+
 
     describe '.find_by_price' do
       context 'when both min_price and max_price are present' do
