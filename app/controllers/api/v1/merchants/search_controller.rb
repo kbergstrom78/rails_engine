@@ -11,7 +11,7 @@ module Api
               render json: MerchantSerializer.new(merchants.first).serializable_hash.to_json
             end
           else
-            render json: { data: [] }, status: 200
+            render json: { data: { merchants: [] } }, status: 200
           end
         end
       end
